@@ -1,7 +1,14 @@
-require("dotenv").config();
-const { REST, Routes } = require("discord.js");
-const fs = require("node:fs");
-const path = require("node:path");
+import "dotenv/config";
+import { REST, Routes } from "discord.js";
+import fs from "node:fs";
+import path from "node:path";
+
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+
+// 👇️ "/home/john/Desktop/javascript"
+const __dirname = path.dirname(__filename);
 
 const commands = [];
 // Grab all the command files from the commands directory you created earlier
@@ -40,7 +47,7 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
     // The put method is used to fully refresh all commands in the guild with the current set
     const data = await rest.put(
-      Routes.applicationGuildCommands(process.env.APP_ID, process.env.GUILD_ID),
+      Routes.applicationCommands(process.env.APP_ID),
       { body: commands }
     );
 

@@ -17,16 +17,14 @@ function createCommandChoices() {
   return commandChoices;
 }
 
-// Simple test command
-const TEST_COMMAND = {
-  name: "test",
-  description: "Basic command",
-  type: 1,
-};
-
 const FIGHT_COMMAND = {
   name: "fight",
-  description: "Theosis Start",
+  description: "Step into the arena",
+  type: 1,
+};
+const ATTACK_COMMAND = {
+  name: "attack",
+  description: "Step into the arena",
   type: 1,
 };
 const GENESIS_COMMAND = {
@@ -52,7 +50,7 @@ const CHALLENGE_COMMAND = {
 };
 
 const ALL_COMMANDS = [
-  TEST_COMMAND,
+  ATTACK_COMMAND,
   CHALLENGE_COMMAND,
   FIGHT_COMMAND,
   GENESIS_COMMAND,
