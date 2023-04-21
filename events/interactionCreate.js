@@ -1,24 +1,69 @@
-const { Events } = require("discord.js");
+const { getShuffledPowers, addAcolyte } = require("../game");
+const {
+  ActionRowBuilder,
+  StringSelectMenuBuilder,
+  Events,
+} = require("discord.js");
 
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
-    if (!interaction.isChatInputCommand()) return;
+    if (interaction.isChatInputCommand()) {
+      const command = interaction.client.commands.get(interaction.commandName);
 
-    const command = interaction.client.commands.get(interaction.commandName);
+      if (!command) {
+        console.error(
+          `No command matching ${interaction.commandName} was found.`
+        );
+        return;
+      }
 
-    if (!command) {
-      console.error(
-        `No command matching ${interaction.commandName} was found.`
-      );
-      return;
-    }
+      try {
+        await command.execute(interaction);
+      } catch (error) {
+        console.error(`Error executing ${interaction.commandName}`);
+        console.error(error);
+      }
+    } else if (interaction.isButton()) {
+      if (interaction.customId === "accept") {
+        const selectMenu = new StringSelectMenuBuilder()
+          .setCustomId("powerMenu")
+          .setPlaceholder("Choose a power")
+          .addOptions(getShuffledPowers());
 
-    try {
-      await command.execute(interaction);
-    } catch (error) {
-      console.error(`Error executing ${interaction.commandName}`);
-      console.error(error);
+        const row = new ActionRowBuilder().addComponents(selectMenu);
+
+        await interaction.reply({
+          content: "Select a power:",
+          components: [row],
+          ephemeral: true,
+        });
+        await interaction.message.delete();
+      } else if (interaction.customId.startsWith("battle_accept_")) {
+        const componentId = interaction.customId;
+        const gameId = componentId.replace("battle_accept_", "");
+      }
+    } else if (interaction.isStringSelectMenu()) {
+      /////Respond after user selects power
+      if (interaction.customId === "powerMenu") {
+        ////Create new Acolyte object
+        const userName = interaction.user.username;
+        const userId = interaction.user.id;
+        const selectedPower = interaction.values[0];
+        let newAcolyte = {
+          id: userId,
+          name: userName,
+          hp: 1,
+          pp: 1,
+          power: selectedPower,
+        };
+        /////Push new Acolyte object to Array
+        addAcolyte(newAcolyte);
+        interaction.reply({
+          content: `Welcome new Acolyte ${userName}, who has been blessed with the gift of ${selectedPower}!`,
+        });
+      }
+      // respond to the select menu
     }
   },
 };

@@ -1,14 +1,7 @@
-import "dotenv/config";
-import { REST, Routes } from "discord.js";
-import fs from "node:fs";
-import path from "node:path";
-
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-
-// 👇️ "/home/john/Desktop/javascript"
-const __dirname = path.dirname(__filename);
+require("dotenv").config();
+const { REST, Routes } = require("discord.js");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const commands = [];
 // Grab all the command files from the commands directory you created earlier

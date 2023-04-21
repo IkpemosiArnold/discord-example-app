@@ -1,12 +1,40 @@
-const { SlashCommandBuilder } = require("discord.js");
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  SlashCommandBuilder,
+} = require("discord.js");
+const { getAcolytes } = require("../../game");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("fight")
-    .setDescription("Let us rumble."),
+    .setDescription("Go for glory."),
   async execute(interaction) {
-    // interaction.user is the object representing the User who ran the command
-    // interaction.member is the GuildMember object, which represents the user in the specific guild
-    await interaction.reply(`Teheee`);
+    const userName = interaction.user.username;
+    const userId = interaction.user.id;
+    const id = interaction.id;
+    const readyAcolytes = getAcolytes();
+
+    /////Check if user already registered
+    if (readyAcolytes.some((readyAcolyte) => readyAcolyte.id === userId)) {
+      const foundAcolyte = readyAcolytes.find(
+        (readyAcolyte) => readyAcolyte.id === userId
+      );
+      const accept = new ButtonBuilder()
+        .setCustomId(`battle_accept_${id}`)
+        .setLabel("Accept Challenge")
+        .setStyle(ButtonStyle.Primary);
+
+      const row = new ActionRowBuilder().addComponents(accept);
+      await interaction.reply({
+        content: `<${userName}> bestowed with the gift of ${foundAcolyte.power} asks if anybody dares to face them in the arena`,
+        components: [row],
+      });
+    } else {
+      await interaction.reply({
+        content: `You do not have the blood of theos flowing through you yet unnamed one.\n Go to the genesis before you try step into the arena.`,
+      });
+    }
   },
 };
