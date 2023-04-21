@@ -1,4 +1,5 @@
 const { capitalize } = require("./utils");
+const activeGames = {};
 const readyAcolytes = [];
 const getResult = (p1, p2) => {
   let gameResult;
@@ -146,11 +147,23 @@ const getAcolytes = () => {
   return readyAcolytes;
 };
 
-const addGame = (acolyteObj) => {
-  readyAcolytes.push(acolyteObj);
+const initGame = (id, userId) => {
+  activeGames[id] = {
+    id: userId,
+  };
+};
+const addGame = (id, key, value) => {
+  activeGames[id][key] = value;
 };
 
-const getGame = () => {
-  return readyAcolytes;
+const getGame = (id) => {
+  return activeGames[id];
 };
-module.exports = { getShuffledPowers, addAcolyte, getAcolytes };
+module.exports = {
+  getShuffledPowers,
+  addAcolyte,
+  getAcolytes,
+  addGame,
+  getGame,
+  initGame,
+};

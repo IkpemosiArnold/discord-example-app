@@ -4,7 +4,7 @@ const {
   ButtonStyle,
   SlashCommandBuilder,
 } = require("discord.js");
-const { getAcolytes } = require("../../game");
+const { getAcolytes, addGame, initGame } = require("../../game");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -21,11 +21,12 @@ module.exports = {
       const foundAcolyte = readyAcolytes.find(
         (readyAcolyte) => readyAcolyte.id === userId
       );
+      initGame(id, userId);
       const accept = new ButtonBuilder()
         .setCustomId(`battle_accept_${id}`)
         .setLabel("Accept Challenge")
         .setStyle(ButtonStyle.Primary);
-
+      addGame(id, "player1", foundAcolyte);
       const row = new ActionRowBuilder().addComponents(accept);
       await interaction.reply({
         content: `<${userName}> bestowed with the gift of ${foundAcolyte.power} asks if anybody dares to face them in the arena`,

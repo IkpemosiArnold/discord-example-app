@@ -1,4 +1,10 @@
-const { getShuffledPowers, addAcolyte } = require("../game");
+const {
+  getShuffledPowers,
+  addAcolyte,
+  addGame,
+  getGame,
+  getAcolytes,
+} = require("../game");
 const {
   ActionRowBuilder,
   StringSelectMenuBuilder,
@@ -40,8 +46,27 @@ module.exports = {
         });
         await interaction.message.delete();
       } else if (interaction.customId.startsWith("battle_accept_")) {
+        const userName = interaction.user.username;
+        const userId = interaction.user.id;
+        const readyAcolytes = getAcolytes();
         const componentId = interaction.customId;
         const gameId = componentId.replace("battle_accept_", "");
+
+        if (readyAcolytes.some((readyAcolyte) => readyAcolyte.id === userId)) {
+          const foundAcolyte = readyAcolytes.find(
+            (readyAcolyte) => readyAcolyte.id === userId
+          );
+          addGame(gameId, "player2", foundAcolyte);
+          const activeGame = getGame(gameId);
+          console.log(activeGame);
+          await interaction.reply({
+            content: `The Stage is set`,
+          });
+        } else {
+          await interaction.reply({
+            content: `You do not have the blood of theos flowing through you yet unnamed one.\n Go to the genesis before you try step into the arena.`,
+          });
+        }
       }
     } else if (interaction.isStringSelectMenu()) {
       /////Respond after user selects power
