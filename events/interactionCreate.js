@@ -11,6 +11,8 @@ const {
   Events,
 } = require("discord.js");
 
+const axios = require("axios");
+
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
@@ -62,6 +64,55 @@ module.exports = {
           await interaction.reply({
             content: `The Stage is set`,
           });
+
+          ///Call Arbiter and do intro
+          let gameDetails = {
+            Acolytes: [
+              {
+                Name: activeGame["player1"].name,
+                Powers: [
+                  {
+                    Name: activeGame["player1"].power,
+                    PowerLevel: 1,
+                  },
+                ],
+                HP: 100,
+                Actions: [
+                  {
+                    Round: 1,
+                    Action: "I do stuff with my powers",
+                  },
+                ],
+              },
+              {
+                Name: activeGame["player2"].name,
+                Powers: [
+                  {
+                    Name: activeGame["player2"].power,
+                    PowerLevel: 1,
+                  },
+                ],
+                HP: 100,
+                Actions: [
+                  {
+                    Round: 1,
+                    Action: "I do stuff with my power",
+                  },
+                ],
+              },
+            ],
+            Environment:
+              "clear day, moderate temparature, no wind, dry terrain",
+            CurrentRound: 1,
+          };
+          const getIntro = async (gamedetails) => {
+            let res = await axios.post(
+              "https://aetherarbiter.bowojori7.repl.co/intro",
+              gamedetails
+            );
+            interaction.editReply(res.data);
+          };
+          getIntro(gameDetails);
         } else {
           await interaction.reply({
             content: `You do not have the blood of theos flowing through you yet unnamed one.\n Go to the genesis before you try step into the arena.`,
