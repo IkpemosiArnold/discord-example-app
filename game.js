@@ -155,7 +155,15 @@ const initGame = (id, userId) => {
 const addGame = (id, key, value) => {
   activeGames[id][key] = value;
 };
-
+const setGameRound = (id, key, value) => {
+  activeGames[id][key] = value;
+};
+const getGameRound = (id) => {
+  return activeGames[id].round;
+};
+const addPlayerAction = (id, key, prop, value) => {
+  activeGames[id][key][prop] = value;
+};
 const getGame = (id) => {
   return activeGames[id];
 };
@@ -170,4 +178,7 @@ module.exports = {
   getGame,
   initGame,
   getAllGames,
+  setGameRound,
+  addPlayerAction,
+  getGameRound,
 };

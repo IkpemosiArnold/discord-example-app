@@ -10,6 +10,7 @@ const {
   initGame,
   getGame,
   getAllGames,
+  getGameRound,
 } = require("../../game");
 
 module.exports = {
@@ -29,22 +30,39 @@ module.exports = {
     const readyAcolytes = getAcolytes();
     const usermove = interaction.options.getString("move");
     let gameID;
+    let gameDetails = {};
     const games = getAllGames();
 
     /////Check if user already registered
     if (readyAcolytes.some((readyAcolyte) => readyAcolyte.id === userId)) {
+      /////get current acolyte
       const foundAcolyte = readyAcolytes.find(
         (readyAcolyte) => readyAcolyte.id === userId
       );
+
+      ////get game id
       for (const id in games) {
         if (games[id].id.includes(userId)) {
           gameID = games[id].id;
         }
       }
-
+      //get game
       const activeGame = getGame(gameID);
-      console.log(gameID);
+
+      //get game current round
+      const currentRound = getGameRound(gameID);
+
+      //check if game exists
       if (gameID) {
+        //check if both players have made moves in the current round
+
+        //check which player it is that made the move
+        if (activeGame["player1"].id === userId) {
+          activeGame["player1"] = usermove;
+        } else if (activeGame["player2"].id === userId) {
+          activeGame["player2move"] = usermove;
+        }
+
         await interaction.reply({
           content: `<${userName}>'s move : ${usermove}`,
         });

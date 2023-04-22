@@ -5,6 +5,8 @@ const {
   getGame,
   getAcolytes,
   initGame,
+  setGameRound,
+  addPlayerAction,
 } = require("../game");
 const {
   ActionRowBuilder,
@@ -60,6 +62,14 @@ module.exports = {
             (readyAcolyte) => readyAcolyte.id === userId
           );
           addGame(gameId, "player2", foundAcolyte);
+          setGameRound(gameId, "round", 1);
+          let actionValue = [
+            {
+              Round: 1,
+              Action: "",
+            },
+          ];
+          addPlayerAction(gameId, "player2", "Actions", actionValue);
           const activeGame = getGame(gameId);
           const player1id = activeGame.id.toString();
           const newID = userId.toString() + player1id;
