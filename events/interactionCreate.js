@@ -4,6 +4,7 @@ const {
   addGame,
   getGame,
   getAcolytes,
+  initGame,
 } = require("../game");
 const {
   ActionRowBuilder,
@@ -60,6 +61,10 @@ module.exports = {
           );
           addGame(gameId, "player2", foundAcolyte);
           const activeGame = getGame(gameId);
+          const player1id = activeGame.id.toString();
+          const newID = userId.toString() + player1id;
+          console.log(newID);
+          activeGame.id = newID;
           console.log(activeGame);
           await interaction.reply({
             content: `The Stage is set`,

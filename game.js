@@ -159,6 +159,9 @@ const addGame = (id, key, value) => {
 const getGame = (id) => {
   return activeGames[id];
 };
+const getAllGames = () => {
+  return activeGames;
+};
 module.exports = {
   getShuffledPowers,
   addAcolyte,
@@ -166,4 +169,5 @@ module.exports = {
   addGame,
   getGame,
   initGame,
+  getAllGames,
 };
