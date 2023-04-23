@@ -93,7 +93,7 @@ module.exports = {
                     PowerLevel: 1,
                   },
                 ],
-                HP: 100,
+                HP: 3,
                 Actions: [
                   {
                     Round: 1,
@@ -109,7 +109,7 @@ module.exports = {
                     PowerLevel: 1,
                   },
                 ],
-                HP: 100,
+                HP: 3,
                 Actions: [
                   {
                     Round: 1,
@@ -120,7 +120,7 @@ module.exports = {
             ],
             Environment:
               "clear day, moderate temparature, no wind, dry terrain",
-            CurrentRound: 1,
+            CurrentRound: 0,
           };
           const getIntro = async (gamedetails) => {
             let res = await axios.post(
@@ -146,7 +146,7 @@ module.exports = {
         let newAcolyte = {
           id: userId,
           name: userName,
-          hp: 1,
+          hp: 3,
           pp: 1,
           power: selectedPower,
         };

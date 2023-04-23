@@ -57,6 +57,7 @@ module.exports = {
         );
         console.log(res.data);
         interaction.followUp(res.data.message);
+        interaction.followUp("You may continue the battle");
         activeGame["player1"].hp = res.data["hp"]["1"];
         activeGame["player2"].hp = res.data["hp"]["2"];
         ///check if any players hp has reached 0 then call finale
@@ -114,14 +115,8 @@ module.exports = {
                     PowerLevel: 1,
                   },
                 ],
-                HP: 3,
-                Actions: [
-                  {
-                    Round: 1,
-                    Action:
-                      activeGame["player1"].Actions[currentRound - 1].Action,
-                  },
-                ],
+                HP: activeGame["player1"].hp,
+                Actions: activeGame["player1"].Actions.slice(0, currentRound),
               },
               {
                 Name: activeGame["player2"].name,
@@ -131,34 +126,14 @@ module.exports = {
                     PowerLevel: 1,
                   },
                 ],
-                HP: 3,
-                Actions: [
-                  {
-                    Round: 1,
-                    Action:
-                      activeGame["player2"].Actions[currentRound - 1].Action,
-                  },
-                ],
+                HP: activeGame["player2"].hp,
+                Actions: activeGame["player2"].Actions.slice(0, currentRound),
               },
             ],
             Environment:
               "clear day, moderate temparature, no wind, dry terrain",
-            CurrentRound: 1,
+            CurrentRound: activeGame.round,
           };
-
-          if (currentRound > 1) {
-            gameDetails.Acolytes[0].HP = activeGame["player1"].hp;
-            gameDetails.Acolytes[0].Actions.push({
-              Round: currentRound,
-              Action: activeGame["player1"].Actions[currentRound - 1].Action,
-            });
-            gameDetails.Acolytes[1].HP = activeGame["player2"].hp;
-            gameDetails.Acolytes[1].Actions.push({
-              Round: currentRound,
-              Action: activeGame["player2"].Actions[currentRound - 1].Action,
-            });
-            gameDetails.CurrentRound = currentRound;
-          }
 
           console.log("Both players have made non-empty actions in this round");
           await interaction.reply({
