@@ -140,7 +140,7 @@ module.exports = {
             content: `<${userName}>'s move : ${usermove}\nThe Arbiter will judge the moves now`,
           });
           getRound(gameDetails);
-          setGameRound(gameID, "round", activeGame.round + 1);
+
           activeGame.player1.Actions.push({
             Round: activeGame.round + 1,
             Action: "",
@@ -149,6 +149,7 @@ module.exports = {
             Round: activeGame.round + 1,
             Action: "",
           });
+          setGameRound(gameID, "round", activeGame.round + 1);
         } else {
           console.log(
             "One or both players have not made non-empty actions in this round"
