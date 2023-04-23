@@ -152,6 +152,10 @@ const initGame = (id, userId) => {
     id: userId,
   };
 };
+const updateGameId = (id, newId) => {
+  activeGames[newId] = activeGames[id];
+  delete activeGames[id];
+};
 const addGame = (id, key, value) => {
   activeGames[id][key] = value;
 };
@@ -159,7 +163,7 @@ const setGameRound = (id, key, value) => {
   activeGames[id][key] = value;
 };
 const getGameRound = (id) => {
-  return activeGames[id].round;
+  return activeGames[id]["round"];
 };
 const addPlayerAction = (id, key, prop, value) => {
   activeGames[id][key][prop] = value;
@@ -179,6 +183,7 @@ module.exports = {
   initGame,
   getAllGames,
   setGameRound,
+  updateGameId,
   addPlayerAction,
   getGameRound,
 };

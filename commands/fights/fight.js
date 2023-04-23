@@ -40,7 +40,6 @@ module.exports = {
         },
       ];
       addPlayerAction(id, "player1", "Actions", actionValue);
-      console.log(getGame(id));
       const row = new ActionRowBuilder().addComponents(accept);
       await interaction.reply({
         content: `<${userName}> bestowed with the gift of ${foundAcolyte.power} asks if anybody dares to face them in the arena`,

@@ -11,7 +11,9 @@ const {
   getGame,
   getAllGames,
   getGameRound,
+  setGameRound,
 } = require("../../game");
+const axios = require("axios");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -30,7 +32,6 @@ module.exports = {
     const readyAcolytes = getAcolytes();
     const usermove = interaction.options.getString("move");
     let gameID;
-    let gameDetails = {};
     const games = getAllGames();
 
     /////Check if user already registered
@@ -43,29 +44,144 @@ module.exports = {
       ////get game id
       for (const id in games) {
         if (games[id].id.includes(userId)) {
-          gameID = games[id].id;
+          gameID = games[id].id.toString();
         }
       }
       //get game
-      const activeGame = getGame(gameID);
-
+      const activeGame = games[gameID];
+      //getRound Function
+      const getRound = async (gamedetails) => {
+        let res = await axios.post(
+          "https://aetherarbiter.bowojori7.repl.co/round",
+          gamedetails
+        );
+        console.log(res.data);
+        interaction.followUp(res.data.message);
+        activeGame["player1"].hp = res.data["hp"]["1"];
+        activeGame["player2"].hp = res.data["hp"]["2"];
+        ///check if any players hp has reached 0 then call finale
+        if (activeGame["player1"].hp === 0 || activeGame["player2"].hp === 0) {
+          let res = await axios.post(
+            "https://aetherarbiter.bowojori7.repl.co/finale",
+            gamedetails
+          );
+          console.log(res.data);
+          interaction.followUp(res.data);
+        } else {
+          console.log(res.data);
+        }
+      };
       //get game current round
       const currentRound = getGameRound(gameID);
 
       //check if game exists
       if (gameID) {
-        //check if both players have made moves in the current round
-
-        //check which player it is that made the move
+        //check which player it is that made the move then update game object accordingly
         if (activeGame["player1"].id === userId) {
-          activeGame["player1"] = usermove;
+          activeGame["player1"].Actions[currentRound - 1].Action = usermove;
         } else if (activeGame["player2"].id === userId) {
-          activeGame["player2move"] = usermove;
+          activeGame["player2"].Actions[currentRound - 1].Action = usermove;
         }
 
-        await interaction.reply({
-          content: `<${userName}>'s move : ${usermove}`,
-        });
+        // Check if both players have made non-empty actions in the current round
+        let player1HasAction = false;
+        let player2HasAction = false;
+
+        // Check player1's actions
+        if (
+          activeGame.player1.Actions.length > 0 &&
+          activeGame.player1.Actions[activeGame.round - 1].Action !== ""
+        ) {
+          player1HasAction = true;
+        }
+
+        // Check player2's actions
+        if (
+          activeGame.player2.Actions.length > 0 &&
+          activeGame.player2.Actions[activeGame.round - 1].Action !== ""
+        ) {
+          player2HasAction = true;
+        }
+
+        if (player1HasAction && player2HasAction) {
+          let gameDetails = {
+            Acolytes: [
+              {
+                Name: activeGame["player1"].name,
+                Powers: [
+                  {
+                    Name: activeGame["player1"].power,
+                    PowerLevel: 1,
+                  },
+                ],
+                HP: 3,
+                Actions: [
+                  {
+                    Round: 1,
+                    Action:
+                      activeGame["player1"].Actions[currentRound - 1].Action,
+                  },
+                ],
+              },
+              {
+                Name: activeGame["player2"].name,
+                Powers: [
+                  {
+                    Name: activeGame["player2"].power,
+                    PowerLevel: 1,
+                  },
+                ],
+                HP: 3,
+                Actions: [
+                  {
+                    Round: 1,
+                    Action:
+                      activeGame["player2"].Actions[currentRound - 1].Action,
+                  },
+                ],
+              },
+            ],
+            Environment:
+              "clear day, moderate temparature, no wind, dry terrain",
+            CurrentRound: 1,
+          };
+
+          if (currentRound > 1) {
+            gameDetails.Acolytes[0].HP = activeGame["player1"].hp;
+            gameDetails.Acolytes[0].Actions.push({
+              Round: currentRound,
+              Action: activeGame["player1"].Actions[currentRound - 1].Action,
+            });
+            gameDetails.Acolytes[1].HP = activeGame["player2"].hp;
+            gameDetails.Acolytes[1].Actions.push({
+              Round: currentRound,
+              Action: activeGame["player2"].Actions[currentRound - 1].Action,
+            });
+            gameDetails.CurrentRound = currentRound;
+          }
+
+          console.log("Both players have made non-empty actions in this round");
+          await interaction.reply({
+            content: `<${userName}>'s move : ${usermove}\nThe Arbiter will judge the moves now`,
+          });
+          getRound(gameDetails);
+          setGameRound(gameID, "round", activeGame.round + 1);
+          activeGame.player1.Actions.push({
+            Round: activeGame.round + 1,
+            Action: "",
+          });
+          activeGame.player2.Actions.push({
+            Round: activeGame.round + 1,
+            Action: "",
+          });
+        } else {
+          console.log(
+            "One or both players have not made non-empty actions in this round"
+          );
+          await interaction.reply({
+            content: `<${userName}>'s move : ${usermove}`,
+          });
+        }
       } else {
         await interaction.reply({
           content: `You haven't accepted or made any challenges.\nWhy are you flailing about ?`,
